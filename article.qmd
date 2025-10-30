@@ -1,0 +1,843 @@
+---
+title: "A Situated Perspective on CONIC: Evidence of Compensatory Effects of Conscientiousness and Situational Interest on the Task Level"
+shorttitle: "A SITUATED PERSPECTIVE ON CONIC"
+abstract: "Conscientiousness and interest each have a substantial impact on learning. The conscientiousness × interest compensation (CONIC) model conceptualizes their interplay as compensatory in predicting academic effort. Previous research has primarily applied the CONIC model to aggregated measures of effort, leaving a gap in understanding the nuanced mechanisms underlying the activation of interest in specific learning situations. To address this gap, we investigated whether the compensatory relationship between conscientiousness and interest does not only pertain to the level of a course or subject but does also exists when working on individual tasks. Specifically, we examined how students’ conscientiousness and situational interest interact in predicting task effort. Our sample consisted of 1,839 secondary school students in Germany (*M*~age~ = 16.4, *SD* = 1.5, 42.7% female). Using latent moderated structural equation modeling, we observed positive main effects of conscientiousness and situational interest on task effort, alongside negative interaction effects between these variables. The findings support the compensatory effects proposed by the CONIC model at the task level. This research contributes to a deeper understanding of how conscientiousness and situational interest interact dynamically to influence academic effort, offering insights into how these effects persist over time to influence broader learning outcomes."
+keywords: [CONIC, conscientiousness, interest, academic effort]
+bibliography: ref.bib
+author-note:
+  disclosures:
+    conflict of interest: The author has no conflict of interest to declare.
+format:
+  apaquarto-docx: default
+execute:
+  echo: false
+  cache: true
+dpi: 300
+mask: false
+---
+
+```{r}
+#| label: analysis
+#| eval: false
+#| include: false
+
+# eval latent analysis (once)
+# source("analyse.R")
+```
+
+```{r}
+#| label: setup
+#| include: false
+
+library(conflicted)
+library(papaja)
+library(MplusAutomation)
+library(tidyverse)
+library(flextable)
+library(ftExtra)
+conflicts_prefer(dplyr::filter, .quiet = TRUE)
+conflicts_prefer(flextable::separate_header, .quiet = TRUE)
+
+stars_fun <- function(x) {
+  dplyr::case_when(
+    x < 0.001 ~ "***",
+    x < 0.01  ~ "**",
+    x < 0.05  ~ "*",
+    .default = "")
+}
+
+
+flextable::set_flextable_defaults(
+  line_spacing = 1,
+  tabcolsep = 1,
+  arraystretch = 1)
+
+theme_apa_s <- function (x, ...) {
+    if (!inherits(x, "flextable")) {
+        stop(sprintf("Function `%s` supports only flextable objects.", 
+            "theme_apa_s()"))
+    }
+    apa.border <- list(width = 0.75, 
+        color = "black", style = "solid")
+    x <- flextable::font(x, part = "all", fontname = "Consolas")
+    x <- flextable::fontsize(x, part = "all", size = 9)
+    x <- flextable::line_spacing(x, space = 1, part = "all")
+    x <- flextable::hline_top(x, part = "head", border = apa.border)
+    x <- flextable::hline_bottom(x, part = "head", border = apa.border)
+    x <- flextable::hline_top(x, part = "body", border = apa.border)
+    x <- flextable::hline_bottom(x, part = "body", border = apa.border)
+    x <- flextable::align(x, align = "center", part = "all")
+    x <- flextable::valign(x, valign = "center", part = "all")
+    flextable::fix_border_issues(x)
+}
+```
+
+```{r}
+#| label: data
+#| include: false
+
+dat_mplus <- readr::read_csv("dat_mplus.csv")
+```
+
+Across the school years, educators, parents, and students find themselves on a quest to uncover the formula for (fostering) academic success. While some attribute academic success to unwavering diligence and hard work [i.e., conscientiousness, e.g., @john2008], others argue that a fascination with the task at hand and a genuine interest in the subject can yield the most remarkable outcomes [i.e., interest, @hidi2006; @renninger2011; @renninger2019]. According to the conscientiousness × interest compensation model [CONIC, @trautwein2015; @trautwein2019], not only can the two variables each individually lead to academic success, but conscientiousness and interest can (partially) compensate for each other. Hence, students with higher conscientiousness or higher interest exert more effort, which may lead to better achievement and academic success, and students with higher interest can make up for their lack of conscientiousness by showing more interest in a given task and vice versa.
+
+Previous research has provided empirical evidence that supports the CONIC model across school subjects and achievement-related outcomes, namely, academic effort [e.g., @rieger2022; @trautwein2015] and academic achievement [e.g., @kehle2025; @song2020] in terms of school grades or test scores [for further extensions to other constructs see @bareis2024]. Although effects at the task level motivated the CONIC model [@trautwein2019], they have received little scrutiny so far. Addressing the CONIC model from such a fine-grained perspective, that is, at the task level, @trautwein2015 provided the first evidence of the applicability of the CONIC model from a more situated perspective, using diary data and focusing on within-student variation when doing homework. Recently, @kehle2025 conducted an experimental laboratory study that provided evidence supporting the CONIC model by promoting either conscientious learning or interest-based learning. In an additional observational laboratory study involving artificial learning tasks, no evidence for a compensatory effect of interest and conscientiousness on task effort was found. Consequently, @kehle2025 suggested that further research using more authentic learning materials would be beneficial to gain deeper insights into the specific mechanisms underlying the CONIC model at the task level.\
+Hence, evidence of fine-grained effects at the task level is still missing for authentic learning environments. Taking such a situated approach, we investigated whether the assumptions of the CONIC model can be supported at the task level, examining the interaction of situational interest and task effort in the context of complex writing tasks in upper secondary school. Evidence of such task-specific effects would strengthen the empirical of the CONIC model.
+
+## Conscientiousness: A Broad Personality Trait
+
+Conscientiousness is one of the personality traits described in the well-known five-factor model [@costa1992]; conscientious individuals are characterized as careful, thoughtful, and organized [e.g., @john2008]. In particular, conscientiousness describes "socially prescribed impulse control that facilitates task- and goal-directed behavior, such as thinking before acting, delaying gratification, following norms and rules, and planning, organizing, and prioritizing tasks" [@john2008, p. 120]. Conscientiousness is known to relate to the willingness to achieve, to set goals, and to regulate effort [see @barrick1993; @bidjerano2007]. Among the traits described in the five-factor model, conscientiousness is the one most strongly associated with academic behaviors.
+
+Conscientiousness has been shown to be beneficial across subject domains, and the importance of conscientious behavior for different academic subjects has been highlighted [@brandt2020; @meyer2019; @meyer2023]. However, the role of personality traits has been shown mainly for measures of achievement and effort aggregated across performance situations and less so for behavior in specific tasks [@meyer2023]. However, it can be assumed that conscientiousness plays a role within all of these situations, which then cumulate to explain behavioral tendencies and associations with life outcomes such as academic success.
+
+Taking a closer look at how conscientiousness relates to achievement at the task level could increase understanding of learning processes within the level of individual tasks would strengthen the empirical evidence for these assumptions, especially because more situated perspectives on what relates to academic behavior in different contexts are increasingly being considered in educational psychology [@pekrun2022].
+
+## Interest: Being motivated to engage with subject domains and tasks
+
+Interest is a construct from motivation psychology that plays a role in both the situated expectancy-value theory [@eccles2020] and the interest theory [@hidi2006]. The exact definition of interest differs to some degree across theoretical approaches [@ainley2012; @hidi2006; @reeve2015a], but they agree, and the empirical literature consistently shows, that interest is an important determinant of academic engagement and effort [@hidi2006; @reeve2015a]. Interest includes both an affective and a cognitive component, is conceptualized as being content-specific, and can differ across different activities within the same subject domain [see @hidi2006]. Interest theory distinguishes between individual and situational interest. Individual interest is defined as "a relatively enduring predisposition to reengage with particular content over time" [@hidi2008, p. 88] and is often conceptualized as a relatively stable evaluative orientation toward certain school subjects [@eccles2002; @renninger2011; @schiefele2009]. Hence, individual interest relates to specific content; for instance, a student may be highly interested in the content of chemistry lessons but less interested in arts.
+
+In contrast, situational interest describes a state caused by a stimulus in the environment, that is, it refers to an immediate psychological state in which a predisposition has been activated in a particular situation [@hidi2006]. Situational interest, in particular, refers to the "focused attention and the affective reaction that is triggered in the moment by environmental stimuli, which may or may not last over time" [@hidi2006, p. 113]. Such environmental stimuli can be, for instance, a perceived knowledge deficit when confronted with a task or topic [@rotgans2014]. Situational interest thus differs substantially from individual interest, which refers to a relatively enduring (i.e., trait-like) predisposition to stay engaged with content over time; this definition of individual interest is closely aligned with the definition of intrinsic value from the expectancy-value theory. As such, situational interest and individual interest differ in terms of situation-specificity and cross-situational consistency [or longitudinal stability, @knogler2015].
+
+Interest has been shown to be positively associated with achievement across a variety of academic subjects [@jansen2016]. More specifically, evidence suggests that this relationship may be partially mediated by persistence [e.g., @ainley2002; @ainley2002a] and effort [@bråten2014; @lipstein2006]. However, the strength of the association between situational interest and effort may depend on contextual factors, such as whether the assessment is low- or high-stakes [@dietrich2017; c.f., @cole2008; @bråten2014], as well as the presence of a more enduring individual interest in the subject domain.
+
+## Task Effort
+
+Academic effort can be conceptualized as the "invested cognitive capacity while working on a task" [@krell2017] and is accompanied by higher degrees of diligence and persistence [@trautwein2007]. Unsurprisingly, academic effort is positively associated with achievement [@cole2008; @trautwein2009]. However, there are substantial inter- [@trautwein2009] and intra-individual [@janssen2022; @rieger2022; @yeo2008] differences in students' academic effort at an aggregated and task level, although the stability of academic effort in a subject over time is at least moderate, with *r* = \[.38, .50\] between subsequent years [@rieger2022]. Therefore, understanding how student-level factors predict task effort is a relevant factor in explaining differences in student academic behaviors and success.
+
+Academic effort can, for instance, depend on students' competence beliefs, values [@dietrich2017], and conscientiousness [@cole2008]. On a short timescale, students' academic effort may decline depending on their conscientiousness and the perceived task difficulty [@yeo2008].
+
+## The CONIC Model: Empirical Evidence
+
+The CONIC model [@trautwein2015; @trautwein2019] accounts for how conscientiousness and interest can predict academic effort both independently and jointly. More precisely, the CONIC model postulates a compensatory relationship between conscientiousness and interest in predicting academic effort, which means that high interest, for instance in a school subject or a task content, can partly compensate for a lack of conscientiousness and vice versa. For a schematic illustration of the CONIC model, see @fig-model. According to @song2020, the compensatory mechanism can be explained by the assumption that academic effort can be instigated and sustained via two different routes: One is through hard work and diligence—traits that conscientious students display across different subject domains—and a tendency to engage in strenuous activities in order to reach long term goals, such as a good grade, even if those activities are not experienced as enjoyable at the time [@deyoung2002]. The second path involves students who are fascinated by a particular subject domain and are therefore willing to work hard specifically for that subject or task because engaging in the activity elicits an emotional experience by itself [@eccles1983].
+
+[INSERT @fig-model HERE]
+
+```{r, engine='tikz'}
+#| label: fig-model
+#| fig-cap: The Conscientiousness × Interest Compensation (CONIC) Model
+#| apa-note: The black dot represents a latent interaction. Positive relations are shown in black; negative relations in red.
+#| fig-align: center
+
+\usetikzlibrary{math, positioning, arrows, arrows.meta, shapes, bending, calc, backgrounds}
+
+\begin{tikzpicture}[>=latex,%
+    manifest/.style={draw, fill=white, align=center, minimum size=.9cm, text width=.9cm, inner sep=1pt},%
+    latent/.style={draw, fill=white, ellipse, align=center, minimum size=.9cm, text width =2cm, inner sep=1pt, execute at begin node=\setlength{\baselineskip}{1em}}]
+
+
+    % nodes
+    \node (int) at (0,-2) [latent] {Interest};
+    \node (con) at (0,2) [latent] {Conscientious- ness};
+    \node (conxint) at (2.5,0) [draw, circle, fill=black, inner sep=0pt, minimum size=.2cm] {};
+    \node (out) at (6,0) [latent] {Effort};
+
+    % interaction
+    \draw[->, thick] (con.east) -- (conxint);
+    \draw[->, thick] (int.east) -- (conxint);
+
+
+    \begin{scope}[on background layer]
+    % correlations
+    \path[<->, thick, bend right]
+        (con.west) edge (int.west);
+    
+    % interest to output
+    \draw[->, thick, color=black] (int.east) -- (out.west) node[midway, above] {};
+
+    % con to output
+    \draw[->, thick, color=black] (con.east) -- (out.west) node[midway, above] {};
+
+    % interaction to output
+    \draw[->, thick, color=red] (conxint.east) -- (out.west) node[midway, above] {};
+
+    \end{scope}
+
+\end{tikzpicture}
+```
+
+To test these assumptions, the CONIC model began by initially focusing on the joint predictive validity of conscientiousness and interest: @trautwein2015 conducted a systematic study on how conscientiousness and interest interact in different school subjects across four samples. The findings indicate evidence for a compensatory interaction between conscientiousness and interest. They provided the first evidence of interest in a school subject compensating for lack of conscientiousness in generating academic effort in that subject and vice versa. More recently, @rieger2022 investigated the CONIC model in three school subjects in a longitudinal study, providing evidence of a compensatory interaction effect on academic effort over time. In other studies, effects as predicted by the CONIC model have been replicated across various school subjects and it has been shown that they can be generalized for achievement outcomes in terms of subject-specific school grades [@bareis2024; @song2020] and standardized test scores [@Grund2024].
+
+## Taking a Situated Perspective: Generalizing Evidence on the Applicability of the CONIC Model
+
+As described above, most initial research on the CONIC model focused on interest, academic effort, and/or achievement as aggregated measures. More precisely, interest was conceptualized as individual interest, and an aggregated view of students' subject interest was focused on. Thus, up until now, students' interest has been mainly conceptualized in a trait-like manner, generalizing across situations and capturing a general tendency of how much students are interested in a subject such as mathematics [c.f., @kehle2025]. This common conceptualization of interest as interest in a subject domain does not fully capture the essence of academic interest—specifically, how academic interest can be sparked as situational interest, leading students to actively engage in a specific activity at a given moment. Repeated and sustained engagement in specific activities can gradually develop into subject interest over time, as students find enjoyment in working within a subject (e.g., mathematics), experience situational interest in particular contexts, and ultimately infer that they generally like the subject as a whole. In the same way, academic effort specific situations may accumulate over time to shape estimations of average effort. However, these aggregated measures might not fully serve researchers in understanding students' learning behavior across situations.
+
+The importance of empirically considering the situated nature of students' interest has recently been highlighted in the literature, which has emphasized how interest can fluctuate across tasks [@eccles2020]. This intraindividual variability can partly be explained by different mechanisms and sources of interest activation, either through the interaction of individual interest with the environment or through environmental stimuli alone [@renninger2011]. Consequently, individual interest is neither a prerequisite nor a perfect predictor of situational interest [e.g., @tsai2008; @tröbst2016; @rotgans2018].
+
+If individual interest becomes activated when a student interacts with a specific task, interactions between conscientiousness and situational interest on the task level similar to those between conscientiousness and individual interest that are commonly found on the school subject level can be expected [@song2020; @trautwein2015; @trautwein2019]. While a comparable compensatory effect between situational interest and conscientiousness thus seems plausible on task level, it is so far unclear whether situational interest is involved in the compensatory relationship according to the CONIC model or whether the postulated compensatory effect only gets into play on a more aggregated, cross-situational level.
+
+Since situational interest may also arise from task-specific factors, such as novelty, challenge, or relevance, it directly influences the degree of engagement and effort a student invests in a particular task [e.g., @renninger2019a]. Therefore, situational interest is likely to have a strong and immediate connection to task effort and learning [@rotgans2018].
+
+Notably, the shift in motivational research to a more situated perspective on motivation has not been captured in research focusing on the CONIC model, that is, the effect of situated interest has been scarcely demonstrated for academic effort in interaction with conscientiousness [@trautwein2015; Study 4]. To investigate the generalizability of the assumptions of the CONIC model to a more situated level, for example, a specific task level, this study tailored classical measurement items to the context to assess interest in a more task-specific manner. Adopting this situated perspective, we focused on situational interest, offering a detailed analysis of specific learning situations that have largely been explored only in an aggregated way.
+
+<!-- Kehle2025 !both a non-experimental and an experimental laboratory study with university students to investigate the compensatory effects of conscientiousness and interest at the test level. The non-experimental study employed cognitive ability tests, including the Concentration Performance Test and the Memory for Persons Test, while the experimental study utilized a multiple-choice achievement test. The findings revealed no evidence of compensatory effects on academic effort in the non-experimental study but provided support for the CONIC model in the experimental study.-->
+
+# The Present Study
+
+The CONIC model [@trautwein2019] allows for a more thorough understanding of how psychological variables act together in academic situations and of their importance for academic success through students' behavior within and across these situations. This study adds to the literature by providing a fine-grained investigation of the assumptions of the CONIC model at the task level. We addressed the question of how situational interest and conscientiousness act together to explain student behavior (i.e., task effort). On the basis of the assumptions of the CONIC model regarding aggregated measures of effort, we hypothesized that students can compensate for low situational interest with high conscientiousness (or vice versa) and that this can be shown at the task level, that is, we expected situational interest to interact with conscientiousness as a broad personality trait and general behavioral tendencies in a compensatory way.
+
+The present study is a secondary data analysis conducted within the framework of a larger research project. It focuses on two complex writing tasks, enabling an investigation into whether the compensatory relationship between conscientiousness and situational interest remains stable across at least two consecutive tasks—that is, over shorter time scales.
+
+We argue that using such situated measures of effort and interest can help to further clarify how students approach learning and school-based tasks and this information could be used to design effective learning opportunities. Due to its nature, the CONIC effect should be generalizable across these individual, situated achievement situations in which students decide whether to exert the effort needed to complete a task. If they do exert the effort, this could be because of high conscientiousness, that is, they exert effort in every task, or because of specific interest in the task at hand.
+
+In the present study, we conceptualized academic effort at the task level, using a complex writing task in upper secondary school. In addition to the general conceptualization of subject-specific interest as a trait-like or cumulative measure, we also added a situated measure of situational interest. We aimed to obtain empirical evidence of such task-specific effects, thereby providing new insights into the robustness of the CONIC model.
+
+We addressed the following research question:
+
+Is there evidence of a compensatory interaction between conscientiousness and situational interest when predicting task effort?
+
+# Method
+
+## Participants and Procedure
+
+```{r}
+#| label: sample-text
+
+dat_schools <- dat_mplus |>
+  dplyr::mutate(schools = as.integer(stringr::str_sub(classid, 1L, -1L - 2))) |>
+  dplyr::select(school, schools) |>
+  dplyr::summarise(
+    .by = school,
+    n = dplyr::n_distinct(schools))
+
+```
+
+The present study included `r dplyr::n_distinct(dat_mplus$classid)` classes from `r sum(dat_schools$n)` schools, with `r dat_schools$n[dat_schools$school == 0]` categorized as general track schools and `r dat_schools$n[dat_schools$school == 1]` as academic track schools. The sample consisted of `r format(nrow(dat_mplus), big.mark = ",")` secondary school students (*M*~age~ = `r papaja::apa_num(mean(dat_mplus$age, na.rm = TRUE), digits = 1)`, *SD* = `r papaja::apa_num(sd(dat_mplus$age, na.rm = TRUE), digits = 1)`, age range = \[`r min(dat_mplus$age, na.rm = TRUE)`, `r max(dat_mplus$age, na.rm = TRUE)`\], `r papaja::apa_num(mean(is.na(dat_mplus$age) * 100), digits = 1)`% missing; `r papaja::apa_num(mean(dat_mplus$sex %in% "M") * 100, digits = 1)`% male, `r papaja::apa_num(mean(dat_mplus$sex %in% "F") * 100, digits = 1)`% female, `r papaja::apa_num(mean(dat_mplus$sex %in% "D") * 100, digits = 1)`% other gender identities, `r papaja::apa_num(mean(is.na(dat_mplus$sex) * 100), digits = 1)`% missing) from Grade 9 to 13 in Germany (see @tbl-sample).
+
+```{r}
+#| label: tbl-sample
+#| tbl-cap: Distribution of Participants across School Tracks and Classes
+#| apa-note: n = number of cases in the subsamples, % relative number of cases
+
+
+dat_mplus |>
+  dplyr::select(grade, school, classid) |>
+  dplyr::arrange(grade, school) |>
+  dplyr::mutate(
+    schoolid = stringr::str_sub(classid, 1L, -1L - 2),
+    school = dplyr::case_match(
+      school, 
+      0 ~ "General Track",
+      1 ~ "Academic Track"),
+    Schools_abs = dplyr::n_distinct(schoolid),
+    Classes_abs = dplyr::n_distinct(classid),
+    Students_abs = dplyr::n()) |>
+  dplyr::summarise(
+    .by = c(grade, school),
+    Schools.n = dplyr::n_distinct(schoolid),
+    Classes.n = dplyr::n_distinct(classid),
+    "Classes.%" = papaja::apa_num(dplyr::n_distinct(classid)/Classes_abs[1] * 100, digits = 1),
+    Students.n = dplyr::n(),
+    "Students.%" = papaja::apa_num(dplyr::n()/Students_abs[1] * 100, digits = 1),
+    "B.B" = "") |>
+  dplyr::mutate(dplyr::across(dplyr::everything(), as.character)) |>
+  tidyr::pivot_longer(-c(grade, school)) |>
+  tidyr::pivot_wider(names_from = c(school, name), values_from = c(value)) |>
+  dplyr::rename(
+    "Grade Level" = grade,
+    " _." = "General Track_B.B") |>
+  dplyr::select(-c("Academic Track_B.B")) |>
+  flextable::flextable() |>
+  flextable::separate_header() |>
+  flextable::hline(i = 1, j = 2, part = "header", border = officer::fp_border(style = "inset")) |>
+  flextable::hline(i = 1, j = 8, part = "header", border = officer::fp_border(style = "inset")) |>
+  flextable::empty_blanks() |>
+  theme_apa_s() |>
+  flextable::padding(padding = 0, part = "all") |>
+  flextable::align(align = "right", part = "body") |>
+  flextable::align(i = 3, align = "right", part = "header") |>
+  flextable::autofit() 
+```
+
+Their participation was voluntary, and they did not receive any compensation. The study lasted a total of 90 minutes and took place during regular class in a single school day. Students participated using a digital learning platform accessed via standard web browsers. They navigated through a series of web pages in a fixed sequence, without the option to skip or revisit pages.
+
+At the start of the study, students completed a cognitive abilities test and provided information about their individual interest in German. Then the first writing task began. The students were then asked to read the instructions for the first task. Immediately afterward, they were asked to rate their situational interest (SI~T1~). Students were assigned to write an argumentative essay on a socioscientific issue in 15 minutes, specifically addressing either the topics of energy supply or energy sources, randomly assigned. The objective of the task was to construct a fact-based argument to persuade local politicians to adopt one of three proposed courses of action related to the respective issue (both writing tasks are described in the online supplemental material \[see S1 and S2\]). The task was chosen because writing argumentative essays is a complex and demanding classroom activity that holds high educational relevance. Such tasks require students to process background information—often presented in written form—and to engage in argumentative writing. These processes place significant demands on students’ language abilities, as they must comprehend materials and articulate their arguments effectively [@heitmann2014]. After the first writing task, students asked to rate their task effort (EF~T1~). They then received a generic prompt to their writing and revised their texts within 10 minutes.
+
+Then the second writing task began. The students were then asked to read the instructions for the second task. Immediately afterward, they were asked to rate their situational interest (SI~T2~). The students were asked to write an essay on the other energy topic (energy supply or energy sources) that they had not yet worked on. They had again 15 minutes time. After the second writing task, students asked to rate their task effort (EF~T1~). At the end of the study, students were asked to provide information about their gender and their level of conscientiousness.
+
+@fig-procedure gives an overview of the study procedure. In the following, the first task including the associated situational interest (SI~T1~) and the task effort (EF~T1~), is labeled T1 and the second task of the study, also including the associated situational interest (SI~T2~) and the task effort (EF~T2~), is labeled T2.
+
+All data and analysis code have been made publicly available at the Open Science Framework <https://osf.io/h35xj/>.
+
+[INSERT @fig-procedure HERE]
+
+```{r}
+#| label: fig-procedure
+#| fig-cap: Visualization of the procedure
+#| apa-note: T1 = first task, T2 = second task 2. a Subject interest distinguishes between students' interest in German, chemistry, mathematics, and physics.
+#| fig-align: center
+
+knitr::include_graphics("img/procedure.png")
+```
+
+## Measures
+
+```{r}
+#| label: desc
+
+# M, Alpha and Correlations
+dat_means <- dat_mplus |>
+  dplyr::select(
+    id,
+    seq,
+    sex,
+    school,
+    grade,
+    kft_wle, 
+    dplyr::matches("bf_c_"),
+    dplyr::starts_with("iv_ge"), 
+    dplyr::starts_with("aa_msi_"),
+    dplyr::starts_with("ba_msi_"),
+    dplyr::matches("^ab_ef_"),
+    dplyr::matches("^bb_ef_")) |>
+  dplyr::mutate(
+    sex = dplyr::case_match(
+      sex,
+      "M" ~ 0,
+      "F" ~ 1,
+      .default = NA)) |>
+  tidyr::pivot_longer(-id) |>
+  dplyr::mutate(scale = stringr::str_remove(name, "_[0-9]+$")) |>
+  tidyr::nest(.by = c(scale)) |>
+  dplyr::mutate(data = purrr::map(data, ~ tidyr::pivot_wider(.x, names_from = name, values_from = value))) |>
+  dplyr::mutate(
+    data = purrr::map(data, ~ dplyr::select(.x, -id)),
+    a_data = purrr::map(data, ~ if(ncol(.x) > 1) {psych::alpha(.x)}),
+    a_value = purrr::map_chr(a_data, .f = function(x) {
+      if (!is.null(x)) papaja::print_num(x$total$raw_alpha, gt1 = FALSE) else ""}),
+    m_value = purrr::map(data, ~ rowMeans(.x, na.rm = TRUE))) 
+
+dat_means$a_value[dat_means$scale == "kft_wle"] <- papaja::print_num(dat_mplus$kft_wle_rel[1], gt1 = FALSE)
+
+cors <- dat_means |>
+  dplyr::select(scale, m_value) |>
+  tidyr::unnest(m_value) |>
+  dplyr::mutate(
+    .by = scale,
+    id = 1:n()) |>
+  tidyr::pivot_wider(names_from = scale, values_from = m_value) |>
+  dplyr::rename(start = seq) |>
+  dplyr::select(-id) |>
+  as.matrix() |>
+  corx::corx(triangle = "lower",
+             stars    = c(0.05, 0.01, 0.001),
+             describe = list("N" = \(x) sum(!is.na(x)), 
+                             "M" = \(x) mean(x, na.rm = TRUE),
+                             #"Mdn" = \(x) median(x, na.rm = TRUE),
+                             "SD" = \(x) sd(x, na.rm = TRUE),
+                             "Rel" = \(x) mean(x, na.rm = TRUE),
+                             "Skew" = \(x) psych::skew(x), 
+                             "Kurt" = \(x) psych::kurtosi(x)),
+             z = "start") 
+
+dat_means <- dplyr::filter(dat_means, scale != "seq")
+
+cors$apa[, "Rel"] <- dat_means$a_value
+cors$apa[cors$apa == " - "] <- ""
+```
+
+### Conscientiousness
+
+Conscientiousness, as a stable personality trait [e.g., @borghuis2017, @schock2024], was assessed at the end of the study to minimize methodological biases, such as the potential influence of priming or activating conscientious behavior on task effort and processing. We measured students' conscientiousness using the German short version of the Big Five Inventory scale [BFI-K, @rammstedt2005]. The conscientiousness scale consists of four items. A sample item is "I complete tasks thoroughly." Students indicated on a 5-point Likert scale to what extent they agreed with each statement presented (ranging from 1 = *completely disagree* to 5 = *completely agree*). The internal consistency in every school subject was acceptable ($\alpha$ = `r cors$apa["5. bf_c", "Rel"]`).
+
+### Situational Interest
+
+We recorded students' situational interest for both tasks (T1/T2) immediately after the task was presented, before the students started writing. We used three items developed by @knogler2015. A sample item is "To what extent do you find that the topic of the task matters to you?" The items were rated on a 5-point Likert scale ranging from 1 = *not at all* to 5 = *very much*. The internal consistency at each time point was good ($\alpha_\mathrm{T1/T2}$ = `r cors$apa[grepl("aa_msi", rownames(cors$apa)), "Rel"]`/`r cors$apa[grepl("ba_msi", rownames(cors$apa)), "Rel"]`).
+
+### Academic Effort
+
+We captured students' task effort immediately after the completion of the first (T1) and after the completion of the second task (T2). We used three items developed by @krell2017 to assess students' mental effort. A sample item is "I have tried hard to answer the tasks correctly." The items were rated on a 7-point Likert scale ranging from 1 = *do not agree at all* to 7 = *completely agree*. The internal consistency of the scale was excellent at each time point ($\alpha_\mathrm{T1/T2}$ = `r cors$apa[grepl("ab_ef", rownames(cors$apa)), "Rel"]`/`r cors$apa[grepl("bb_ef", rownames(cors$apa)), "Rel"]`).
+
+### Covariates
+
+We captured students' individual interest in German to reflect the requirements of the tasks, which pertained to reading and writing. Students' individual interest was captured at the beginning of the study before reasing the first task by using four items developed by @gaspard2015. The validity of the scale has already been demonstrated [@gaspard2017; @gaspard2018], and the scale has already been used to investigate the CONIC model [@song2022]. A sample item is "I enjoy dealing with the topics in German." The items were rated on a 4-point Likert scale ranging from 1 = *completely disagree* to 4 = *completely agree*. The internal consistency in every school subject was excellent ($\alpha$ = `r cors$apa[grepl("iv_ge", rownames(cors$apa)), "Rel"]`).
+
+We measured students' cognitive abilities with the Nonverbal Figural Analogies subscale of the test of cognitive abilities [KFT 4-12+R; @heller2000] and applied a multigroup item response theory (IRT) model using grade level as the grouping variable to estimate WLE scores that represented students' cognitive abilities (EAP/PV reliability = `r papaja::apa_num(dat_mplus$kft_eap_rel[1])`, WLE reliability = `r papaja::apa_num(dat_mplus$kft_wle_rel[1])`) on the same metric. Students were assigned to cognitive abilities tests before the writing tasks to measure cognitive ability without influence from the cognitively demanding writing tasks.
+
+After finishing the second writing task, we asked students to provide their gender (0 = male, 1 = female). Additionally, we included into our analysis students' grade level, task order (0 = energy supply first, energy sources second; 1 = energy sources first, energy supply second), and type of input device, that is, whether an external keyboard was available to complete the tasks (0 = no external keyboard, 1 = external keyboard).
+
+## Data Analysis
+
+```{r}
+#| label: icc
+
+desc_item <- dat_mplus |>
+  dplyr::mutate(grade = scale(grade)[,1],
+                key = scale(key)[,1]) |>
+  dplyr::select(key, grade, kft_wle, sex:bb_ef_3) |>
+  psych::describe()
+
+
+mult_icc <- dat_mplus |>
+  dplyr::mutate(grade = scale(grade)[,1],
+                key = scale(key)[,1]) |>
+  dplyr::select(classid, kft_wle, sex:bb_ef_3) |>
+  dplyr::mutate(
+    sex = dplyr::case_match(
+      sex,
+      "M" ~ 0,
+      "F" ~ 1,
+      .default = NA)) |>
+  base::data.frame() %>%
+  dplyr::reframe(multilevel::mult.icc(.[-1], grpid = .$classid))
+
+```
+
+Our analysis aimed to investigate the situational nature of the interaction effect of conscientiousness and interest on task effort as proposed by the CONIC model. Therefore, we mostly applied the analytical approach elaborated by @trautwein2015 as well as @song2020 with the difference that two writing tasks were considered in our analyses and, therefore, longitudinal measurement invariance had to be established [see @rieger2022]. Our analyses consisted of three steps. First, we established longitudinal measurement invariance over T1 and T2 for situational interest and task effort through confirmatory factor analysis (CFA; measurement invariance model). Second, we estimated a structural equation model (M1: main effects model) with covariates but without the interaction between conscientiousness and situational interest, and third, we included the latent interaction between conscientiousness and situational interest (M2: interaction effects model). Complementary models and their results are described in the online supplemental material (see S4). We used Mplus 8.11, applying the Huber–White robust SE estimator (MLR) and the full information maximum likelihood method (FIML) to account for missing data. All items were approximately normally distributed (i.e., absolute values for skewness lower than 2, absolute values for kurtosis lower than 7), that is, the values for skewness ranged from `r papaja::apa_num(min(desc_item$skew))` to `r papaja::apa_num(max(desc_item$skew))` (average: `r papaja::apa_num(mean(desc_item$skew))`), and the values for kurtosis ranged from `r papaja::apa_num(min(desc_item$kurtosis))` to `r papaja::apa_num(max(desc_item$kurtosis))` (average: `r papaja::apa_num(mean(desc_item$kurtosis))`). To control for the nested structure of the data, that is, students were nested in classes (ICC\[1\]s ranged from `r papaja::apa_num(min(mult_icc$ICC1), gt1 = FALSE)` to `r papaja::apa_num(max(mult_icc$ICC1), gt1 = FALSE)`, with an average of `r papaja::apa_num(mean(mult_icc$ICC1), gt1 = FALSE)`), we used the design-based correction of standard errors and fit statistics by enabling the "type = complex" option [@mcneish2017]. Moreover, we standardized all continuous manifest variables (M = 0, SD = 1) before performing the analyses to limit multicollinearity problems [@marsh2012a; @morin2013].
+
+We evaluated the overall model fit by using the comparative fit index (CFI) and the Tucker–Lewis index (TLI), where values \> .90 were considered adequate and values \> .95 were evaluated as a good model fit (Hu & Bentler, 1999), the root mean square error of approximation (RMSEA), where values between .05 and .08 were considered reasonable and values \< .05 a good model fit, and the standardized root mean square residual (SRMR), where values \< .08 were considered a good model fit [@browne1992].
+
+The measurement invariance model was a basic CFA model comprising situational interest and task effort. In these model, the covariances between situational interest (at T1 and T2) and task effort (at T1 and T2) were freely estimated. We used the correlated uniqueness approach to model method effects. We established configural (same factor structure across time), metric (equal factor loadings across time), scalar (equal factor loadings and intercepts across time), and strict (equal factor loadings, intercepts, and residuals across time) measurement invariance (see also in the online supplemental material \[S3\]). Measurement invariance was indicated by changes of CFI \< .010 and RMSEA \< .015 [@chen2007; @cheung2002].
+
+[INSERT @fig-analysis HERE]
+
+```{r, engine = 'tikz'}
+#| label: fig-analysis
+#| fig-cap: "The Analysis Models of the Present Study"
+#| apa-note: The black dots represent latent interactions. Positive relations are shown in black, negative relations in red. The covariates were included in the modeling but are omitted in the figure for the sake of visual simplicity. CON = conscientiousness, SI = situational interest, EF = effort, T1 = first task, T2 = second task.
+
+\usetikzlibrary{math, positioning, arrows, arrows.meta, shapes, bending, calc, backgrounds}
+
+\begin{tikzpicture}[>=latex,%
+    latent/.style={draw, fill=white, ellipse, align=center, minimum size=.8cm, text width=.8cm, inner sep=1pt, execute at begin node=\setlength{\baselineskip}{.9em}}]
+
+
+    % nodes
+    \node (m1int1) at (0.5,-1.5) [latent] {SI\textsubscript{T1}};
+    \node (m1int2) at (3.5,-1.5) [latent] {SI\textsubscript{T2}};
+    \node (m1con) at (0,1.5) [latent] {CON};
+    \node (m1eff1) at (3,0) [latent] {EF\textsubscript{T1}};
+    \node (m1eff2) at (6,0) [latent] {EF\textsubscript{T2}};
+
+    \draw[->, thick, color=black] (m1int1.east) -- (m1eff1.west) node[midway, above] {};
+    \draw[->, thick, color=black] (m1con.east) -- (m1eff1.west) node[midway, above] {};
+    
+    \draw[->, thick, color=black] (m1int2.east) -- (m1eff2.west) node[midway, above] {};
+    \draw[->, thick, color=black] (m1con.east) -- (m1eff2.west) node[midway, above] {};
+ 
+    \node (subcap1) at (3,-4) {Model M1};
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    % nodes
+    \node (m2int1) at (8.5,-1.5) [latent] {SI\textsubscript{T1}};
+    \node (m2int2) at (11.5,-1.5) [latent] {SI\textsubscript{T2}};
+    \node (m2con) at (8,1.5) [latent] {CON};
+    \node (m2conxint1) at (9.5, 0) [draw, circle, fill=black, inner sep=0pt, minimum size=.2cm] {};
+    \node (m2conxint2) at (12.5, 0) [draw, circle, fill=black, inner sep=0pt, minimum size=.2cm] {};
+    \node (m2eff1) at (11,0) [latent] {EF\textsubscript{T1}};
+    \node (m2eff2) at (14,0) [latent] {EF\textsubscript{T2}};
+
+    % interaction
+    \draw[->, thick] (m2con.east) -- (m2conxint1);
+    \draw[->, thick] (m2int1.east) -- (m2conxint1);
+    
+    \draw[->, thick] (m2con.east) -- (m2conxint2);
+    \draw[->, thick] (m2int2.east) -- (m2conxint2);
+    
+
+    \draw[->, thick, color=black] (m2int1.east) -- (m2eff1.west) node[midway, above] {};
+    \draw[->, thick, color=black] (m2con.east) -- (m2eff1.west) node[midway, above] {};
+    \draw[->, thick, color=red] (m2conxint1.east) -- (m2eff1.west) node[midway, above] {};
+    
+    \draw[->, thick, color=black] (m2int2.east) -- (m2eff2.west) node[midway, above] {};
+    \draw[->, thick, color=black] (m2con.east) -- (m2eff2.west) node[midway, above] {};
+    \draw[->, thick, color=red] (m2conxint2.east) -- (m2eff2.west) node[midway, above] {};
+    
+
+    \node (subcap2) at (11,-4) {Model M2};
+
+\end{tikzpicture}
+
+```
+
+In the main effects model (M1), task effort was regressed on conscientiousness and situational interest. Furthermore, all correlations between task effort (T1) and situational interest (T2) and task effort (T2) and situational interest (T1) were allowed. Additionally, the covariates cognitive abilities, individual interest, gender, grade level, school track, device/external keyboard, and task were included as control variables.
+
+The interaction effects model (M2) included the latent interaction between conscientiousness and situational interest as an additional predictor (see @fig-analysis), that is, we applied the latent moderated structural equations approach [@klein2000]. We then examined whether the latent interaction between situational interest and conscientiousness explained a significant portion of the variance in the dependent variables task effort by employing log-likelihood ratio tests with uncorrected difference test statistics [see @gerhard2014]. The LMS approach does not supply fit indices because it cannot detect the presence of nonlinear terms [@mooijaart2009]. Thus, we only evaluated the overall model fit of the main effects model (M1) by using multiple goodness-of-fit indices and used the log-likelihood ratio test to infer whether the interaction effects model (M2) also fit the data well.
+
+```{r}
+#| label: tbl-desc
+#| tbl-cap: Results of the Descriptive Analyses; the Table Depicts Partial Correlations
+#| apa-note: School = school track (0 = general track, 1 = academic track), CFT = cognitive abilities test, SI = situational interest, T1 = first task, T2 = second task, EF = effort, N = total number of cases, M = sample mean, SD = standard deviation, $\alpha$ = Cronbach's index of internal consistency, * = p < 0.05, ** = p < 0.01, *** = p < 0.001
+
+cors_tab1 <- cors$apa |>
+  base::as.data.frame() |>
+  tibble::rownames_to_column(var = "Scale") |>
+  dplyr::select(-(N:Kurt)) |>
+  dplyr::mutate(dplyr::across(dplyr::everything(), \(x) stringr::str_replace(x, "^\\.", " 0.")),
+                dplyr::across(dplyr::everything(), \(x) stringr::str_replace(x, "^(\\-|\\+)\\.", "\\10."))) 
+
+cors_tab2 <- cors$apa |>
+  base::as.data.frame() |> 
+  dplyr::select(N:Kurt) |>
+  tibble::rownames_to_column(var = "name") |>
+  dplyr::mutate(
+    name = stringr::str_remove(name, "\\. .*$"),
+    Rel = stringr::str_replace(Rel, "^\\.", "0."),
+    N = as.integer(N),
+    dplyr::across(N:Kurt, \(x) formatC(x, width = 5))) |>
+  tidyr::pivot_longer(-name, names_to = "Scale") |>
+  tidyr::pivot_wider(names_from = name, values_from = value)
+
+dplyr::bind_rows(cors_tab1, cors_tab2) |>
+  dplyr::mutate(Scale = dplyr::case_match(
+    Scale,
+    "1. sex" ~ "1. Female",
+    "2. school" ~ "2. School",
+    "3. grade" ~ "3. Grade",
+    "4. kft_wle" ~ "4. CFT",
+    "5. bf_c" ~ "5. CON",
+    "6. iv_ge" ~ "6. IN",
+    "7. aa_msi" ~  "7. SI T1",
+    "8. ba_msi" ~ "8. SI T2",
+    "9. ab_ef" ~ "9. EF T1",
+    "10. bb_ef" ~ "10. EF T2",
+    "Rel" ~ "α",
+    "Mdn" ~ "Median",
+    "Skew" ~ "Skewness",
+    "Kurt" ~ "Kurtosis",
+    .default = Scale)) |>
+  flextable::flextable()  |>
+  theme_apa_s() |>
+  flextable::padding(padding = 0, part = "all") |>
+  flextable::align(align = "left", part = "all") |>
+  flextable::hline(i = c(6, 10)) |>
+  flextable::autofit() 
+```
+
+# Results
+
+Our research goal was to provide further empirical evidence of the generalizability of the CONIC model to specific learning situations by examining task-specific effects. The descriptive results for the manifest variables included in our analysis are listed in @tbl-desc, and the main findings are shown in @tbl-sg-time-result. Specifically, we analyzed the effects of conscientiousness and situational interest on students' task effort in two complex writing tasks. Furthermore, we included individual interest as a covariate to check the robustness of our findings.
+
+[INSERT @tbl-desc HERE]
+
+```{r}
+#| label: tbl-sg-time-result
+#| tbl-cap: Summary of Results of the Main and the Interaction Effects Model
+#| apa-note: Fully standardized regression coefficients and fit values are shown. Covariates were students' indiviual interest, cognitive abilities, school track, grade level, gender, and type of input device. CON = conscientiousness, SI = situational interest, CON × SI = latent interaction of conscientiousness and situational interest, EF = effort. * = p < 0.05, ** = p < 0.01, *** = p < 0.001.
+
+models <- c(
+  "sg_sem_m1_iv", 
+  "sg_sem_m2_iv_int",
+  "sg_sem_m3_msi", 
+  "sg_sem_m4_msi_int", 
+  "sg_sem_m5_msi_iv",
+  "sg_sem_m6_msi_iv_int",
+  "sg_sem_m7_msi_int_iv",
+  "sg_sem_m8_msi_iv_int2"
+)
+
+models <- c(
+  #"sg_sem_m1_iv", 
+  #"sg_sem_m2_iv_int",
+  #"sg_sem_m3_msi", 
+  #"sg_sem_m4_msi_int", 
+  "sg_sem_m5_msi_iv",
+  #"sg_sem_m6_msi_iv_int",
+  "sg_sem_m7_msi_int_iv"#,
+  #"sg_sem_m8_msi_iv_int2"
+)
+
+
+results <- purrr::map(models, ~ MplusAutomation::readModels(paste0("mplus/sem/", .x, ".out")))
+names(results) <- paste0("M", 1:length(results))
+
+
+results_pars <- purrr::map(results, \(x) data.frame(x$parameters$stdyx.standardized)) |>
+  dplyr::bind_rows(.id = "Filename")
+
+
+results_fit <- purrr::map(results, function (x) data.frame(x$summaries)) |>
+  dplyr::bind_rows(.id = "Filename") |>
+  dplyr::select(Filename, CFI, TLI, RMSEA_Estimate, SRMR) |>
+  dplyr::rename(RMSEA = RMSEA_Estimate) |>
+  tidyr::pivot_longer(cols = CFI:SRMR, names_to = "paramHeader", values_to = "value") |>
+  tidyr::drop_na() |>
+  dplyr::mutate(value = papaja::apa_num(value, digits = 3, gt1 = FALSE, flag = " ")) |>
+  dplyr::mutate(param = "FIT")
+
+
+results_tab <- dplyr::bind_rows(results_pars, results_fit) |>
+  dplyr::filter(paramHeader %in% c("FIT", "AB_EF.ON", "BB_EF.ON", "AA_MSI.ON", "BA_MSI.ON") | param == "FIT") |>
+ # dplyr::filter(stringr::str_detect(param, "^FIT|^CON|^IV_GE|^[AB]{0,1}CONXINT|^[AB]A_MSI")) |>
+  dplyr::filter(stringr::str_detect(param, "^FIT|^CON|^[AB]{0,1}CONXINT|^[AB]A_MSI")) |>
+  dplyr::mutate(
+    tp = dplyr::case_when(
+      stringr::str_detect(paramHeader, "^A") ~ 0,
+      stringr::str_detect(paramHeader, "^B") ~ 1, 
+      .default = 2),
+    #paramHeader = stringr::str_remove(paramHeader, "^[BA]{2}_"),
+    paramHeader = dplyr::case_match(
+      paramHeader, 
+      "AA_MSI.ON" ~ "SI~T1~",
+      "AB_MSI.ON" ~ "SI~T2~",
+      "AB_EF.ON" ~ "EF~T1~",
+      "BB_EF.ON" ~ "EF~T2~",
+      .default = paramHeader), 
+    param = dplyr::case_match(
+      param,
+      "CONXINT" ~ "CON \u00D7 IN",
+      "ACONXINT" ~ "CON \u00D7 SI~T1~",
+      "BCONXINT" ~ "CON \u00D7 SI~T2~",
+      "AA_MSI" ~ "SI~T1~",
+      "BA_MSI" ~ "SI~T2~",
+      "IV_GE" ~ "IN",
+      .default = param),
+    param = factor(param, c("CON", "SI~T1~", "SI~T2~", "CON \u00D7 SI~T1~", "CON \u00D7 SI~T2~", "IN", "CON \u00D7 IN", "FIT"))) |>
+  dplyr::arrange(Filename, tp, rev(paramHeader), param) |>
+  dplyr::mutate(
+    value = dplyr::if_else(
+      !is.na(est),
+      paste0(papaja::apa_num(est, gt1 = FALSE, flag = " -"), stars_fun(pval)),
+      value),
+    paramHeader = stringr::str_remove(paramHeader, "\\.ON$"),
+    paramHeader = factor(paramHeader, c("EF~T1~", "EF~T2~", "CFI", "TLI", "RMSEA", "SRMR"))
+   ) |>
+  dplyr::select(Filename, tp, paramHeader, param, value) |>
+  tidyr::pivot_wider(values_from = value, names_from = c(Filename), names_sort = TRUE) |>
+  # dplyr::mutate(
+  #   tp = dplyr::case_when(
+  #     param == "DSI" & paramHeader == "SI" ~ paste0(tp, "b"),
+  #     .default = paste0(tp, "a")
+  #   )
+  # ) |>
+  dplyr::arrange(tp, param, paramHeader) |>
+  dplyr::mutate(Path = dplyr::if_else(param == "FIT", paramHeader, paste0(param, " \u2192 ", paramHeader))) |>
+  dplyr::select(tp, Path, M1:paste0("M", length(models))) 
+
+out_table <- dplyr::bind_rows(
+  tibble::tibble(Path = "TP = 1"), 
+  dplyr::filter(results_tab, tp == 0),
+  tibble::tibble(Path = "TP = 2"), 
+  dplyr::filter(results_tab, tp == 1),
+  tibble::tibble(Path = "Fit"), 
+  dplyr::filter(results_tab, tp == 2)) |>
+  dplyr::select(-tp) 
+
+
+out_table |>
+  # dplyr::rename_with(~ stringr::str_replace(.x, "M1", "Main\nEffects\nModel")) |>
+  # dplyr::rename_with(~ stringr::str_replace(.x, "M2", "Interaction\nEffects\nModel")) |>
+  dplyr::mutate(Path = dplyr::case_match(
+    Path,
+    "TP = 1" ~ "First Task T1",
+    "TP = 2" ~ "Second Task T2",
+    .default = Path)) |>
+  flextable::flextable() |> 
+  flextable::separate_header() |> 
+  flextable::hline(i = 1, part = "header") |>
+  flextable::hline(i = c((nrow(out_table) - 5)/2, nrow(out_table) - 5), part = "body") |>
+  ftExtra::colformat_md(j = c(1,3)) |>
+  theme_apa_s() |>
+  flextable::padding(padding = 0, part = "all") |>
+  flextable::align(align = "center", part = "header") |>
+  flextable::align(align = "left", part = "body") |>
+  flextable::autofit() 
+```
+
+Our analytical approach consisted of three major steps. First, we established strict measurement invariance over the tasks T1 and T2 by using CFAs (M0). The results of the increasingly restrictive models (configural, metric, scalar, and strict measurement invariance) are depicted in in the online supplemental material (S3). In the main effects models (M1), task effort were regressed on conscientiousness and situational interest.
+
+[INSERT @tbl-sg-time-result HERE]
+
+```{r}
+#| label: darius-results-text
+
+# model1 <- mods_sg_sem_m2[grepl("m2\\.out$", names(mods_sg_sem_m2))]
+# model2 <- mods_sg_sem_m2[!grepl("m2\\.out$", names(mods_sg_sem_m2))]
+
+fit_m1 <- results$M1$summaries
+
+pars_m1_cor <- results["M1"] |> 
+  lapply(function (x) data.frame(x$parameters$stdyx.standardized)) |>
+  dplyr::bind_rows(.id = "Filename") |>
+  dplyr::filter(
+    stringr::str_detect(paramHeader, "^B[AB]_(EF|A)\\.WITH") &
+      stringr::str_detect(param, "^A[AB]_(EF|A)")) |>
+  dplyr::mutate(
+    paramHeader = stringr::str_remove_all(paramHeader, "\\.WITH$"),
+    est = papaja::apa_num(est, gt1 = FALSE),
+    pval  = papaja::print_p(max(pval), add_equals = TRUE),
+    val = paste0("$r$ = ", est, ", p ", pval)) 
+
+pars_m1_main <- results["M1"] |>
+  lapply(function (x) data.frame(x$parameters$stdyx.standardized)) |>
+  dplyr::bind_rows(.id = "Filename") |>
+  dplyr::filter(
+    stringr::str_detect(paramHeader, "\\.ON") &
+      stringr::str_detect(param, "^INT$|^CON$|^[AB]A_MSI$")) |> 
+  dplyr::mutate(
+    paramHeader = stringr::str_remove(paramHeader, "\\.ON$"),
+    param = stringr::str_remove(param, "^[AB]{2}_"),
+    est = papaja::apa_num(est, gt1 = FALSE),
+    pval  = papaja::print_p(pval, add_equals = TRUE),
+    t = dplyr::if_else(paramHeader == "AB_EF", "T1", "T2"),
+    val = paste0("$\\beta_\\mathrm{", t, "}$ = ", est, ", p ", pval)) |>
+  dplyr::select(paramHeader, param, val) |>
+  tidyr::pivot_wider(names_from = param, values_from = val)
+
+pars_m1_cov <- results_pars |>
+  dplyr::filter(Filename == "M1") |>
+  dplyr::filter((paramHeader %in% c("AB_EF.ON", "BB_EF.ON") & 
+                   param %in% c("KFT_WLE", "GRADE", "SCHOOL", "IV_GE", "SEX") ) |
+                  (paramHeader %in% c("AA_MSI.ON", "BA_MSI.ON") & param == "IV_GE")) |>
+   dplyr::mutate(
+     paramHeader = stringr::str_remove(paramHeader, "\\.ON$"),
+     param = stringr::str_remove(param, "^[AB]{2}_"),
+     est = papaja::apa_num(est, gt1 = FALSE),
+     pval  = papaja::print_p(pval, add_equals = TRUE),
+     t = dplyr::if_else(paramHeader == "AB_EF", "T1", "T2"),
+     val = paste0("$\\beta_\\mathrm{", t, "}$ = ", est, ", p ", pval)) |>
+  dplyr::select(paramHeader, param, val) |>
+  tidyr::pivot_wider(names_from = param, values_from = val)
+
+get_par <- function (dat, y, x) {
+  dplyr::filter(dat, paramHeader == y) |> 
+  dplyr::pull(x)
+}
+
+pars_m2 <- lapply(results["M2"], function (x) data.frame(x$parameters$stdyx.standardized)) |>
+  dplyr::bind_rows(.id = "Filename") |>
+  dplyr::filter(stringr::str_detect(paramHeader, "\\.ON") &
+                  param %in% c("CONXINT", "ACONXINT", "BCONXINT")) |>
+  dplyr::mutate(est = papaja::apa_num(est, gt1 = FALSE),
+                pval = papaja::print_p(pval, add_equals = TRUE)) |>
+  dplyr::select(Filename, paramHeader, est, pval) |>
+  tidyr::pivot_wider(names_from = paramHeader, values_from = c(est, pval)) |>
+  dplyr::arrange(Filename)
+
+
+
+
+
+pars_m2_cov <- results_pars |>
+  dplyr::filter(Filename == "M2") |>
+  dplyr::filter((paramHeader %in% c("AB_EF.ON", "BB_EF.ON") & 
+                   param %in% c("KFT_WLE", "GRADE", "SCHOOL", "IV_GE", "SEX") ) |
+                  (paramHeader %in% c("AA_MSI.ON", "BA_MSI.ON") & param == "IV_GE")) |>
+   dplyr::mutate(
+     paramHeader = stringr::str_remove(paramHeader, "\\.ON$"),
+     param = stringr::str_remove(param, "^[AB]{2}_"),
+     est = papaja::apa_num(est, gt1 = FALSE),
+     pval  = papaja::print_p(pval, add_equals = TRUE),
+     t = dplyr::if_else(paramHeader == "AB_EF", "T1", "T2"),
+     val = paste0("$\\beta_\\mathrm{", t, "}$ = ", est, ", p ", pval)) |>
+  dplyr::select(paramHeader, param, val) |>
+  tidyr::pivot_wider(names_from = param, values_from = val)
+
+
+pars_m1_ind <- results$M1$indirect$stdyx.standardized$specific |>
+  dplyr::mutate(dplyr::across(est:pval, as.numeric))
+
+pars_m2_ind <- results$M2$parameters$unstandardized |>
+  dplyr::filter(param %in% c("A_IN", "B_IN"))
+
+pars_m2_ind_std <- MplusAutomation::readModels("mplus/sem/sg_sem_m7_msi_int_iv_std.out")$parameters$unstandardized |>
+  dplyr::filter(param %in% c("A_IN_STD", "B_IN_STD"))
+
+#any(results["M1"]$M1$input$model.constraint == "    0 = rbei - raei;")
+#any(results["M1"]$M1$input$model.constraint == "    0 = rbec - raec;")
+```
+
+The main effects model (M1) demonstrated a good fit (CFI = `r papaja::apa_num(fit_m1$CFI, gt1 = FALSE, digits = 3)`; TLI = `r papaja::apa_num(fit_m1$TLI, gt1 = FALSE, digits = 3)`; RMSEA = `r papaja::apa_num(fit_m1$RMSEA_Estimate, gt1 = FALSE, digits = 3)`; SRMR = `r papaja::apa_num(fit_m1$SRMR, gt1 = FALSE, digits = 3)`). Conscientiousness (`r get_par(pars_m1_main, "AB_EF", "CON")`; `r get_par(pars_m1_main, "BB_EF", "CON")`) and situational interest (`r get_par(pars_m1_main, "AB_EF", "MSI")`; `r get_par(pars_m1_main, "BB_EF", "MSI")`) positively predicted task effort, and prior and subsequent task effort were moderately correlated (`r pars_m1_cor$val`). Regarding the covariates, task effort was predicted by cognitive abilities (`r get_par(pars_m1_cov, "AB_EF", "KFT_WLE")`; `r get_par(pars_m1_cov, "BB_EF", "KFT_WLE")`) and individual interest (`r get_par(pars_m1_cov, "AB_EF", "IV_GE")`; `r get_par(pars_m1_cov, "BB_EF", "IV_GE")`). In addition to the direct path of individual interest on task effort, the indirect path via situational interest was also found to be significant ($\beta_\mathrm{T1}$ = `r papaja::apa_num(pars_m1_ind$est[pars_m1_ind$intervening == "AA_MSI"], gt1 = FALSE)`, *p* `r papaja::apa_p(pars_m1_ind$pval[pars_m1_ind$intervening == "AA_MSI"], add_equals = TRUE)`; $\beta_\mathrm{T2}$ = `r papaja::apa_num(pars_m1_ind$est[pars_m1_ind$intervening == "BA_MSI"], gt1 = FALSE)`, *p* `r papaja::apa_p(pars_m1_ind$pval[pars_m1_ind$intervening == "BA_MSI"], add_equals = TRUE)`).
+
+```{r}
+#| label: anova
+
+diff_fun <- function (m0, m1, corrected = TRUE, as_vector = FALSE) {
+  
+  m0 <- m0$summaries
+  m1 <- m1$summaries
+  
+  df <- abs(m0$Parameters - m1$Parameters)
+  
+  lambda <- -2 * (m0$LL - m1$LL)
+  
+  if (corrected) {
+    cd <- (m0$Parameters * m0$LLCorrectionFactor - m1$Parameters * m1$LLCorrectionFactor)
+    cd <- cd / (m0$Parameters - m1$Parameters)
+    lambda <- lambda / cd 
+  }
+  
+  lrtP <- pchisq(lambda, df = df, lower.tail = FALSE)
+  
+  if (as_vector) {
+    c(df = df, ChiSqDiff = lambda, pval = lrtP)
+  } else {
+    paste0("$\\chi^2$(", df, ") = ", papaja::apa_num(lambda), ", p ", 
+           papaja::apa_p(lrtP, add_equals = TRUE))
+  }
+}    
+
+
+mods_sig <- purrr::map2_chr(.x = results[1], 
+                            .y = results[2], 
+                            diff_fun, corrected = FALSE)
+```
+
+In the interaction effects model (M2), we included the interaction between conscientiousness and situational interest as an additional variable in the main effects model (M1). The log-likelihood ratio tests comparing the main effects models with the interaction effects models were significant `r mods_sig["M1"]`, indicating that the interaction effects models had a substantially better fit than the main effects models. Regarding the prediction of task effort, direct effects of conscientiousness (`r get_par(pars_m1_main, "AB_EF", "CON")`; `r get_par(pars_m1_main, "BB_EF", "CON")`) and situational interest (`r get_par(pars_m1_main, "AB_EF", "MSI")`; `r get_par(pars_m1_main, "BB_EF", "MSI")`) on task effort marginally increased, while the interaction the interaction had a statistically significant negative regression coefficient for situational interest ($\beta_\mathrm{T1}$ = `r pars_m2$est_AB_EF.ON`, *p* `r pars_m2$pval_AB_EF.ON`; $\beta_\mathrm{T2}$ = `r pars_m2$est_BB_EF.ON`, *p* `r pars_m2$pval_BB_EF.ON`). In terms of covariates, cognitive abilities (`r get_par(pars_m2_cov, "AB_EF", "KFT_WLE")`; `r get_par(pars_m2_cov, "BB_EF", "KFT_WLE")`) and individual interest remained significant predictors of task effort (`r get_par(pars_m2_cov, "AB_EF", "IV_GE")`; `r get_par(pars_m2_cov, "BB_EF", "IV_GE")`).
+
+Furthermore, the indirect path via situational interest was found to remain significant ($\beta$ = `r papaja::apa_num(pars_m2_ind_std$est[pars_m2_ind_std$param == "A_IN_STD"], gt1 = FALSE)`, *p* `r papaja::apa_p(pars_m2_ind_std$pval[pars_m2_ind_std$param == "A_IN_STD"], add_equals = TRUE)`; $\beta$ = `r papaja::apa_num(pars_m2_ind_std$est[pars_m2_ind_std$param == "B_IN_STD"], gt1 = FALSE)`, *p* `r papaja::apa_p(pars_m2_ind_std$pval[pars_m2_ind_std$param == "B_IN_STD"], add_equals = TRUE)`). The full results and alternative models are described in the online supplemental material (see S4 and S5).
+
+# Discussion
+
+The present study investigated whether the CONIC model can be generalized to individual achievement situations, that is, to specific tasks. During class, students repeatedly have to decide whether or not to exert the necessary effort to complete a task (task effort). According to the CONIC model, it can be argued that students' increased task effort could be due to higher conscientiousness or higher situational interest in the task at hand. Based on the CONIC model, we hypothesized that conscientiousness and situational interest can be compensatory forces that explain task behavior, that is, students with either high conscientiousness or high situational interest display more effort in specific tasks. Previous research provided support for the CONIC model mainly for measures of interest and effort aggregated over time, i.e., as individual trait-like dispositions. In the current study, we provide evidence for the generalizability of the CONIC model to a situated level using a complex writing assignment as a challenging and school-relevant task that requires substantial effort to complete. We investigated the effects postulated in the CONIC model in a large sample of secondary students who composed two complex argumentative texts. This approach also offered preliminary insights into the potential accumulation of these compensatory effects over shorter time scales.
+
+## Main and Compensatory Effects on Task Effort
+
+We found evidence for main effects of conscientiousness and situational interest on task effort. These findings suggest that higher values in interest and conscientiousness were associated with higher levels of task effort over time [@rieger2022].
+
+Our results on the interaction between conscientiousness and situational interest also strengthen the evidence that conscientiousness and situational interest may compensate for each other, as postulated in the CONIC model [@trautwein2019]. Our results underline that conscientiousness and situational interest are two personal resources that can substitute each other in task-specific situations. These results extend previous studies [@DiDomenico2015; @Sansone1999; @Sansone2010; @song2020; @trautwein2015; @rieger2022] that provided support for this compensatory mechanism by focusing on more aggregated measures of individual interest, effort, and achievement. Only few previous studies used a situated measure but did not include authentic learning tasks [e.g., @kehle2025].
+
+Therefore, at the task-specific level, the findings of this study indicate that a student who exhibits minimal interest in a particular task (e.g., writing an argumentative essay) yet demonstrates conscientiousness is likely to demonstrate a performance level that is analogous to that of a student who is interested in the argumentative writing task but exhibits lower levels of conscientiousness. Similarly, students who find it difficult to be diligent in their schoolwork may compensate for this tendency with their interest in a particular task. As interest is seen as a malleable cognitive and affective motivational variable [@Tang2022], it is evident that the construction of engaging and interesting tasks holds great potential, particularly for students who may exhibit less conscientious study behavior.
+
+Importantly, our results also show how compensatory effects of conscientiousness and situational interest might persist over shorter time scales. Thus, both conscientiousness and situational interest play a role in maintaining interest and effort across multiple tasks during a learning unit, highlighting the benefits of both personal resources during learning opportunities. Students benefit in two ways: they perform better both initially and for an extended period of time, allowing them to make the most of their learning situation. Our results highlight that, in order for students to exert extended effort, it does not matter whether they are more conscientious or more interested; both aspects can enhance effort and achievement.
+
+These findings support the CONIC model and indicate that the effect of conscientiousness on academic effort is stronger when interest is low or that the effect of interest on academic effort is stronger when conscientiousness is low. Thus, our results are in line with previous findings of the CONIC effect, providing evidence for the applicability of the effect in task-specific learning situations [@rieger2022].
+
+<!-- The absence of these effects can perhaps be explained by the fact that the students' individual interest was not activated and, therefore, they did not experience interest. It is possible that, due to the test situation being detached from the usual lessons and not aligned with the content just covered in class, the students did not connect the task content used here with the subject domain. In addition, it is possible that the students were not used to writing argumentative texts about socioscientific issues in science lessons [@heitmann2014; @osborne2004]. Therefore, due to the task content, they may have linked the tasks more to German lessons because of the high proportion of writing, instead of making a connection to science subjects. -->
+
+<!-- ## Main Effects on Task Achievement -->
+
+<!-- We found evidence for main effects of conscientiousness and situational interest on task achievement. Further, both conscientiousness and situational interest significantly and positively predicted the subsequent levels of task achievement, even after the previous levels of task achievement and effort were controlled for. These findings suggest that higher values in interest and conscientiousness were associated with higher levels of task achievement over time [@rieger2022]. Accordingly, the results of our study support the prospective power of both conscientiousness and situational interest in predicting task effort and achievement and the development of task effort and task achievement over the course of a testing session. -->
+
+<!-- We did not find any evidence for main effects of subject interest on task achievement. The reasons for this could, again, be a low fit between the lesson content taught at the time of the study and the task requirements and contexts. -->
+
+<!-- With regard to subject interest, the pattern aligns with findings on the CONIC model for rather stable measures of individual interest [@rieger2022], which have shown more consistent main effects of conscientiousness over time. Interestingly, regarding situational interest, the pattern differs from previous findings and underscores the significance of situational interest. -->
+
+<!-- Our results show that interest and conscientiousness are both relevant for specific learning situations. This highlights the benefit of considering more fine-grained perspectives on task effort and achievement when investigating the CONIC model and, thus, the possibility of thereby gaining a better understanding of learning behavior in specific situations. -->
+
+From a practical standpoint, understanding that conscientiousness and situational interest can compensate for each other in specific situations may help empower students to actively regulate their motivation when tackling effort-demanding tasks. For instance, students with low conscientiousness could benefit from strategies aimed at stimulating their situational interest, such as identifying and addressing knowledge gaps [@jansen2025] or activating their individual interest to enhance self-regulation [e.g., @lee2014; @sansone2000]. Conversely, students lacking interest might benefit from adopting behaviors characteristic of individuals with high conscientiousness, such as breaking the task into smaller, manageable steps. The situative perspective adds to the existing literature that showed relations between the less malleable trait conscientiousness and self-regulation [@eilam2009] by offering a more flexible, task-specific approach. The results suggests that students could enhance self-regulation by connecting their tasks to their individual interests, as individual interest has been linked to stronger self-regulation strategies [@lee2014].
+
+Research also emphasizes the relation between self-regulation strategies and conscientiousness [e.g., @eilam2009; @eisenberg2014]. Our findings suggest that students may also have the potential to actively cultivate and strengthen their (situational) interest to help them increase task effort in academic situations. To support students to motivate themselves to bring the effort necessary for a demanding task, educators can raise students awareness that they can either generate a situation where less conscientiousness is needed or raise their interest in the task, for example, by connecting the topic to something they have already a well-developed interest in. For example, teachers could allow students to choose between different materials [@Patall2008], which could increase the likelihood of inducing situational interest in the task at hand. Future experimental research that focuses on the interplay between situated interest and conscientiousness is needed to support these hypotheses.
+
+## Implications and Future Research Directions
+
+In line with current research efforts in motivational research [@eccles2020], our findings highlight the need to consider specific learning situations in a situated way to understand the determinants of learning better.
+
+Another line of further research might be to investigate how the situational and the more aggregated perspective on CONIC relate to each other. While conscientiousness is assumed as rather stable disposition [e.g., @borghuis2017], situational and individual interest differ in terms of situation-specificity and longitudinal stability [@knogler2015], as does academic and task effort [@rieger2022; @yeo2008]. It has been demonstrated that repeated and sustained engagement in specific activities can result in repeated experience of situational interest. In addition, repeated engagement can stabilize the perceived cognitive capacity necessary for task completion. While these developmental trends are already investigated for the particular constructs, the implications of developmental changes over time on the compensatory effects assumed in CONIC is not yet addressed. When comparing the findings for individual interest (which was included as a covariate only) and situational interest in the present study, the effects for situational interest on task effort were found to be higher than for individual interest. While the higher effects between the two situational measures might reflect their common situation-related focus, it might also imply that conscientiousness might not be the only lever to consider when aiming for increased task effort in students with rather low individual interest. Making use of engaging and interesting tasks might offer a potential to increase students’ effort, even for students who may exhibit both less conscientious study behaviors and low individual interest in a topic. In this context, it might be relevant to investigate in more detail whether the timing of measuring situational interest or task effort (e.g., before or after the task) also influences the interrelations according to CONIC. Because timing influences students' ratings of their perceived situational interest [@rotgans2014], as it was found to influence task effort [@yeo2008], the timing of the individual measures within a study may lead to different patterns of interrelations. Hence, the stability of the CONIC effect on the task level needs to be analyzed in more detail as well.
+
+## Limitations
+
+This study provides evidence of the generalizability of the CONIC model, providing first evidence of the compensatory effect of conscientiousness and situational interest on task effort and achievement. However, some limitations should be kept in mind when interpreting the results.
+
+First, the sample was limited to students at the end of secondary school (Grades 9–13) in one German federal state; the effects might not be generalizable to younger age groups or other national contexts.
+
+Second, we focused specifically on argumentative writing achievement as a challenging and complex task that can be considered in a task-specific way; this enabled a reliable measurement of task achievement because we combined several indicators to assess task achievement. Whether the CONIC effect also applies to other types of tasks, for example, reading comprehension tasks, still needs to be tested. Furthermore, the setting of the task—an assessment conducted outside regular class sessions—may have influenced the interplay between conscientiousness and situational interest. The present study can be characterized as a low-stakes assessment. In such settings, both conscientiousness [@meyer2023] and (situational) interest [@marsh2005; @jansen2016; @rotgans2018] are well-established predictors of effort and performance. In contrast, in high-stakes assessments or more consequential contexts, conscientiousness is likewise assumed to influence effort and performance [@danner2024]. However, this association may be weaker—for example, correlations between conscientiousness and test scores tend to be lower than those between conscientiousness and grades [@meyer2023]. However, the role of (situational) interest in these settings remains less well understood. Associations between interest and test scores tend to be weaker than those with grades [e.g., @jansen2016], and even less is known about whether the conic (i.e., compensatory) effect manifests under these conditions.
+
+Third, we assessed conscientiousness after assessing the task effort and task achievement measures. Even though conscientiousness is a relatively stable trait [@Bleidorn2021], it could be argued that, during the session, students' effort when answering the questionnaire might have declined as a function of their conscientiousness, thus resulting in more valid measures of conscientiousness for more conscientious students. Accordingly, future studies should assess conscientiousness before the tasks or in an independent session and should consider whether the pattern of results is also stable under these circumstances.
+
+Fourth, we assessed situational interest and task effort as self-reports. Future studies could include additional measures, for example, task effort could be measured using time-on-task or key log data as behavioral measures. In this study, we set a time limit of 15 minutes for students to work on the writing assignment, which is why we could not use such a measure of task effort in the present study.
+
+Fifth, we conceptualized conscientiousness as a personality trait and assessed it at the end of the study. However, it is possible that our measure of conscientiousness captured both trait and state variance, which might have been influenced by earlier phases of the study. To address this, it would be valuable to include assessments of students’ conscientiousness provided by teachers or parents. Comparing the patterns of results from these external evaluations of students’ personality traits with the students’ self-reports could offer deeper insights and help validate our findings.
+
+## Conclusion
+
+Taking a situated perspective, the results of the present study provide further evidence of the compensatory nature of the interplay between conscientiousness and interest, as hypothesized in the CONIC model, in specific tasks. This interplay can serve as a potential buffer against decreases in academic effort and achievement. In line with previous research, our results suggest that conscientiousness and situational interest can compensate for each other; that is, a tendency to be conscientious can make up for a low level of situational interest in a task and, vice versa, a high level of situational interest in a task can make up for low conscientiousness. Our findings thus substantiate the assumptions of the CONIC model for specific tasks and situational interest.
+
+{{< pagebreak >}}
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
+
+{{< pagebreak >}}

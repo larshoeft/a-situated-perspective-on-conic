@@ -1,0 +1,51 @@
+variable, description
+id, student id
+seq," task order (1 = energy sources, 2 = energy supply) "
+classid, class id 
+school," school track (0 = non-academic, 1 = academic) "
+grade, grade level 
+key," input device (0 touch, 1 = keyboard) "
+kft_wle, cognitive abilities score 
+sex," gender (0 = male, 1 = female) "
+age,age
+iv_ch_1, subject interest (chemistry) 
+iv_ch_2, subject interest (chemistry)  
+iv_ch_3, subject interest (chemistry)  
+iv_ch_4, subject interest (chemistry) 
+iv_ch_5, subject interest (chemistry)  
+iv_ge_1, subject interest (German) 
+iv_ge_2, subject interest (German)  
+iv_ge_3, subject interest (German)  
+iv_ge_4, subject interest (German) 
+iv_ge_5, subject interest (German)  
+iv_ma_1, subject interest (mathematics)  
+iv_ma_2, subject interest (mathematics) 
+iv_ma_3, subject interest (mathematics) 
+iv_ma_4, subject interest (mathematics)
+iv_ma_5, subject interest (mathematics) 
+iv_ph_1, subject interest (physics)
+iv_ph_2, subject interest (physics) 
+iv_ph_3, subject interest (physics) 
+iv_ph_4, subject interest (physics) 
+iv_ph_5, subject interest (physics) 
+aa_msi_2, task interest (T1)
+aa_msi_4, task interest (T1)
+aa_msi_6, task interest (T1)
+ba_msi_2, task interest (T2) 
+ba_msi_4, task interest (T2)  
+ba_msi_6, task interest (T2)  
+bf_c_1, conscientiousness 
+bf_c_2, conscientiousness 
+bf_c_3, conscientiousness 
+bf_c_4, conscientiousness 
+ab_ef_1, academic effort (T1) 
+ab_ef_2, academic effort (T1) 
+ab_ef_3, academic effort (T1)
+bb_ef_1, academic effort (T2) 
+bb_ef_2, academic effort (T2) 
+bb_ef_3, academic effort (T2) 
+ab_ach, academic achievement (T1) 
+bb_ach, academic achievement (T2)  
+ab_task, dummy variable of seq (T1)  
+bb_task, dummy variable of seq (T2) 
+X_rel,EAP/PV and WLE reliabilitiy
