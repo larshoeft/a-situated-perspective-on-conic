@@ -17,6 +17,7 @@ It provides the Quarto source file used to generate an APA-compliant manuscript 
 ## Repository Contents
 
 -   `article.qmd` — Quarto source file for generating the APA-formatted manuscript.
+-   `analyse.R`  — R script running analyses through MplusAutomation.
 -   `ref.bib` — Bibliographic reference file for Quarto rendering.
 -   `dat_mplus.csv` — Dataset used for the statistical analyses.
 -   `codebook.csv` — Codebook describing all variables and their labels.
@@ -38,4 +39,5 @@ quarto render article.qmd
 ```
 
 This will produce a `.docx` document formatted according to APA guidelines.
+
 
