@@ -1,0 +1,435 @@
+---
+title: "A Situated Perspective on CONIC: Evidence of Compensatory Effects of Conscientiousness and Situational Interest on the Task Level"
+shorttitle: "A SITUATED PERSPECTIVE ON CONIC"
+abstract: ""
+keywords: [CONIC, interest, conscientiousness]
+bibliography: ref.bib
+author-note:
+  disclosures:
+    conflict of interest: The author has no conflict of interest to declare.
+format:
+  apaquarto-docx: default
+suppress-abstract: true
+execute:
+  echo: false
+  cache: true
+dpi: 300
+floatsintext: true
+suppress-title-page: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(conflicted)
+library(papaja)
+library(MplusAutomation)
+library(tidyverse)
+library(flextable)
+library(ftExtra)
+conflicts_prefer(dplyr::filter, .quiet = TRUE)
+conflicts_prefer(flextable::separate_header, .quiet = TRUE)
+
+stars_fun <- function(x) {
+  dplyr::case_when(
+    x < 0.001 ~ "***",
+    x < 0.01  ~ "**",
+    x < 0.05  ~ "*",
+    .default = "")
+}
+
+diff_fun <- function(m0, m1, corrected = TRUE, as_vector = FALSE) {
+  
+  if (purrr::pluck_exists(m0$results)) {
+    m0 <- m0$results$summaries
+  } else {
+    m0 <- m0$summaries
+  }
+  
+  if (purrr::pluck_exists(m1$results)) {
+    m1 <- m1$results$summaries
+  } else {
+    m1 <- m1$summaries
+  }
+  
+  df <- abs(m0$Parameters - m1$Parameters)
+  
+  lambda <- -2 * (m0$LL - m1$LL)
+  
+  if (corrected) {
+    cd <- (m0$Parameters * m0$LLCorrectionFactor - m1$Parameters * m1$LLCorrectionFactor)
+    cd <- cd / (m0$Parameters - m1$Parameters)
+    lambda <- lambda / cd
+  }
+  
+  lrtP <- pchisq(lambda, df = df, lower.tail = FALSE)
+  
+  if (as_vector) {
+    c(df = df, ChiSqDiff = lambda, pval = lrtP)
+  } else {
+    paste0(
+      "$\\chi^2$(", df, ") = ", papaja::apa_num(lambda), ", p ",
+      papaja::apa_p(lrtP, add_equals = TRUE)
+    )
+  }
+}
+
+flextable::set_flextable_defaults(
+  line_spacing = 1,
+  tabcolsep = 1,
+  arraystretch = 1)
+
+theme_apa_s <- function (x, ...) {
+    if (!inherits(x, "flextable")) {
+        stop(sprintf("Function `%s` supports only flextable objects.", 
+            "theme_apa_s()"))
+    }
+    apa.border <- list(width = 0.75, 
+        color = "black", style = "solid")
+    x <- flextable::font(x, part = "all", fontname = "Consolas")
+    x <- flextable::fontsize(x, part = "all", size = 9)
+    x <- flextable::line_spacing(x, space = 1, part = "all")
+    x <- flextable::hline_top(x, part = "head", border = apa.border)
+    x <- flextable::hline_bottom(x, part = "head", border = apa.border)
+    x <- flextable::hline_top(x, part = "body", border = apa.border)
+    x <- flextable::hline_bottom(x, part = "body", border = apa.border)
+    x <- flextable::align(x, align = "center", part = "all")
+    x <- flextable::valign(x, valign = "center", part = "all")
+    flextable::fix_border_issues(x)
+}
+```
+
+```{r}
+#| label: data
+#| include: false
+
+dat_mplus <- readr::read_csv("dat_mplus.csv")
+
+models <- c(
+  "sg_sem_m1_iv", 
+  "sg_sem_m2_iv_int",
+  "sg_sem_m3_msi", 
+  "sg_sem_m4_msi_int", 
+  "sg_sem_m5_msi_iv",
+  "sg_sem_m6_msi_iv_int",
+  "sg_sem_m7_msi_int_iv",
+  "sg_sem_m8_msi_iv_int2"
+)
+
+
+results <- purrr::map(models, ~ MplusAutomation::readModels(paste0("mplus/sem/", .x, ".out")))
+names(results) <- paste0("M", 1:length(results))
+```
+
+# Supplementary Material
+
+## S1 – Procedure
+
+Upon landing on the introduction page, participants saw information about the study's purpose, procedure, and the privacy measures implemented to secure their data. The following sections collected data on their grade level and measured their cognitive abilities through a grade-appropriate questionnaire. Participants then rated their subject interest in four school subjects: German (their first language), chemistry, mathematics, and physics. Next, participants viewed the writing task and rated their situational interest. The task required them to write an argumentative essay on a climate change subject, advocating for one of three options for potential political subsidization. Two topics were administered in a randomized order: one centered on the type of power plant to endorse (wind, water, or solar), while the other deliberated the future of automotive energy supply (accumulators, hydrogen, or e-fuels).
+
+While writing, students received material that included information for and against each option and four guidance tips. This procedure aimed to bolster their argumentation and reduce reliance on previous knowledge. The information comprised six criteria, with an equal number of supportive and contrary data facts per option, compelling students to decide based on argument selection and importance. The four hints for good argumentation included taking a stand for one of the three options, considering all options for each criterion mentioned, supporting the facts with justifications, and comparing the importance of the criteria for their decision. The hints were presented throughout the task so that participants knew what criteria to look for to write a good argument and to get an idea of the assessment criteria. Following a 15-minute drafting period, we assessed their effort level.
+
+The second task also required students to write an argumentative text on a climate change subject within a 15-minute completion period. After reading the writing task, participants evaluated their situational interest in the second topic. Then, they started the second 15-minute completion period, which ended with the effort questionnaire. Finally, the study concluded with students filling out the personality questionnaire and providing demographic details.
+
+{{< pagebreak >}}
+
+## S2 – The Tasks and Argumentation Skills 
+
+In order to measure achievement outcomes in a situated way and provide evidence for CONIC in specific learning situations, there is a need to conceptualize academic achievement and effort at the task level. To provide more insights into how students' interest and conscientiousness interact in predicting task effort, the task needs to be complex enough to trigger the processes described in the CONIC model, that is, the task needs to be challenging for students in order to highlight the importance of increased situational interest or conscientious task behavior. One type of task that is complex, challenging, and highly relevant in the classroom across many subjects is scientific argumentation. For scientific argumentation to be successful, students are required to link subject matter knowledge and a basic understanding of science with the cross-curricular competencies of argumentation, communication, evaluation, and critical thinking [@bögeholz2018]. This is especially challenging for learners given the complexity of writing [@graham2019]. Scientific argumentation happens at the interface between understanding science (including aspects of the nature of science and scientific reasoning) and understanding social relevance (by dealing with socioscientific issues) and, thus, reflects many goals and demands of regular science courses at the task level. In addition, the language demands are high as students need to process (often mainly written) materials and background information as well as engage in argumentative writing. These processes heavily depend on students' capabilities in the language in which these materials are presented [@heitmann2014]. Scientific argumentation is central to an understanding of the social significance of science and is thus a core scientific practice relevant to science and other subjects with regard to daily life problems, as highlighted in educational policy documents [Next Generation Science Standards, -@ngss2013] or international large-scale assessments [e.g., Organisation for Economic Co-operation and Development, -@oecd2024].
+
+
+### Topic: Power Plants (Energy Supply)
+
+Greenhouse gas emissions from the energy sector must be drastically reduced to achieve climate neutrality. The politicians of a district in northern Germany are therefore calling for the district's energy needs to be met entirely by renewable energies. Specifically, it is being discussed whether the construction of the following things should be promoted as an energy converter:
+
+-   a wind energy park,
+
+-   a solar park, or
+
+-   a hydroelectric power plant.
+
+Discuss the above energy converters in light of climate change based on at least three criteria from the materials on the next page. Strengthen your arguments by explaining the relevance of the criteria to your claims.
+
+### Topic: Energy Supply for Automotives (Energy Sources)
+
+Greenhouse gas emissions from passenger transport must be drastically reduced to achieve climate neutrality. Politicians are therefore calling for new cars with gasoline and diesel engines to be banned from 2035 on. Specifically, they are discussing whether cars with
+
+-   accumulators,
+
+-   hydrogen or
+
+-   e-fuels (synthetic fuels)
+
+as energy supplies should be specifically promoted. Discuss the energy supplies mentioned against the background of climate change on the basis of at least three criteria and their explanations from the materials on the next page.
+
+{{< pagebreak >}}
+
+## S3 – Measurement Invariance
+
+The measurement invariance model was a basic CFA model comprising situational interest and task effort. In these model, the covariances between situational interest (at T1 and T2) and task effort (at T1 and T2) were freely estimated. We used the correlated uniqueness approach to model method effects. We established configural (same factor structure across time), metric (equal factor loadings across time), scalar (equal factor loadings and intercepts across time), and strict (equal factor loadings, intercepts, and residuals across time) measurement invariance (see also in the online supplemental material \[S2\]). Measurement invariance was indicated by changes of CFI \< .010 and RMSEA \< .015 [@chen2007; @cheung2002].
+
+```{r}
+#| label: tbl-darius-sg-mitime
+#| tbl-cap: Summary of the results of the measurement invariance testing
+#| apa-note: CFI = comparative fit index, TLI = Tucker–Lewis index, RMSEA = root mean square error of approximation, SRMR = standardized root mean squared residual, Δ = change in.
+#| warning: false
+
+dat_mi <- MplusAutomation::readModels(
+  "mplus/cfa/",
+  filefilter = "sg_cfa_mitime_.*_ful",
+  what = "summaries") 
+
+purrr::map(dat_mi, ~ .x$summaries) |>
+  dplyr::bind_rows(.id = "Model") |>
+  dplyr::mutate(
+    Model = paste(
+      toupper(stringr::str_remove_all(Model, "^sg_cfa_mitime_|_[a-z]{2,3}\\.out$")),
+      "MODEL")) |>
+  dplyr::arrange(Model) |>
+  dplyr::mutate(
+    dRMSEA = c(NA, abs(diff(RMSEA_Estimate))),
+    dCFI = c(NA, abs(diff(CFI))),
+    dSRMR = c(NA, abs(diff(SRMR)))) |>
+  dplyr::rename(RMSEA = RMSEA_Estimate) |>
+  dplyr::select(
+    Model,
+    CFI, TLI, RMSEA, SRMR,
+    dCFI, dRMSEA, dSRMR) |>
+  dplyr::mutate(dplyr::across(CFI:dSRMR, \(x) papaja::apa_num(x, digits = 3, gt1 = FALSE, na_string = ""))) |>
+  dplyr::mutate(
+    Model = dplyr::case_match(
+      Model, 
+      "CONFIG MODEL" ~ "Configural",
+      "METRIC MODEL" ~ "Metric",
+      "SCALAR MODEL" ~ "Scalar",
+      "STRICT MODEL" ~ "Strict")) |>
+  dplyr::rename(
+    "ΔCFI" = "dCFI",
+    "ΔRMSEA" = "dRMSEA",
+    "ΔSRMR" = "dSRMR") |>
+  flextable::flextable()  |>
+  theme_apa_s() |>
+  flextable::padding(padding = 0, part = "all") |>
+  flextable::align(j = 1, align = "left", part = "all") |>
+  flextable::align(j = 2:8, align = "right", part = "all") |>
+  flextable::autofit(part = "all") 
+```
+
+{{< pagebreak >}}
+
+
+## S4 – Complementary Main and Interaction Effects Models
+
+```{r}
+#| label: cal-ind-effects
+
+
+pars_m5_ind <- results$M5$indirect$stdyx.standardized$specific |>
+  dplyr::mutate(dplyr::across(est:pval, as.numeric))
+```
+
+To support the derivation of the two models presented in the article through analyses, additional supplementary models were calculated (see @fig-models and @tbl-darius-sg-results-main). All models contained the same covariates, which are not discussed further in the following.
+
+- We started by calculating a simple main effects model (M1), which included the variables conscientiousness, individual interest, and effort. Subsequently, in an interaction effects model, the interaction between individual interest and conscientiousness was added (M2). Model M2 did not describe the data better than Model M1 (`r diff_fun(results$M1, results$M2, corrected = FALSE)`), as was also evident from non-significant interaction effects.    
+
+- In a second step, we started by calculating another simple main effects model (M3), which included the variables conscientiousness, situational interest, and effort. Subsequently, in an interaction effects model, the interaction between situational interest and conscientiousness was added (M4). Model M4 described the data better than Model M3 (`r diff_fun(results$M3, results$M4, corrected = FALSE)`), as evidenced by significant interaction effects.    
+
+- In a third step, the main effects models M1 and M3 were merged into Model M5. This demonstrated the greater influence of situational interest compared to individual interest on effort. Additionally, there was an indirect path from individual interest via situational interest to effort ($\beta$ = `r papaja::apa_num(pars_m5_ind$est[pars_m5_ind$intervening == "AA_MSI"], gt1 = FALSE)`, *p* `r papaja::apa_p(pars_m5_ind$pval[pars_m5_ind$intervening == "AA_MSI"], add_equals = TRUE)`; $\beta$ = `r papaja::apa_num(pars_m5_ind$est[pars_m5_ind$intervening == "BA_MSI"], gt1 = FALSE)`, *p* `r papaja::apa_p(pars_m5_ind$pval[pars_m5_ind$intervening == "BA_MSI"], add_equals = TRUE)`). Including the interaction of conscientiousness and individual interest (M6) did not improve model fit (`r diff_fun(results$M5, results$M6, corrected = FALSE)`). However, adding the interaction of conscientiousness and situational interest (M7) to effort improved model fit (`r diff_fun(results$M5, results$M7, corrected = FALSE)`), making it the final model of the article. Simultaneously calculating the interaction between conscientiousness and situational interest, and conscientiousness and individual interest did not further improve model fit M8 compared to M7 (`r diff_fun(results$M7, results$M7, corrected = FALSE)`).
+
+{{< pagebreak >}}
+
+```{r}
+#| label: fig-models
+#| fig-cap: "Visualization of Complementary Main and Interaction Effects Models. Green arrows symbolize an improvement in model fit through the inclusion of interaction effects. Red arrows symbolize no improvement in model fit due to the inclusion of interaction effects. Blue arrows symbolize the inclusion of a new variable (i.e., individual or situational interest)"
+#| apa-note: CON = conscientiousness, SI = situational interest, IN = individual interest, EF = effort, T1 = first task, T2 = second task 2
+#| fig-align: center
+
+knitr::include_graphics("img/model_survey.png")
+```
+
+{{< pagebreak >}}
+
+```{r}
+#| label: tbl-darius-sg-results-main
+#| tbl-cap: Summary of Results of the Main Effects and Interaction Effects Models
+#| apa-note: Fully standardized regression coefficients and fit values are shown. Covariates were students' cognitive abilities, school track, grade level, gender, and type of input device. CON = conscientiousness, SI = situational interest, IN = individual interest, CON × SI = latent interaction of conscientiousness and situational interest, CON × IN = latent interaction of conscientiousness and individual interest, EF = effort, T1 = first task, T2 = second task 2. * = p < 0.05, ** = p < 0.01, *** = p < 0.001.
+
+
+
+
+results_pars <- purrr::map(results, \(x) data.frame(x$parameters$stdyx.standardized)) |>
+  dplyr::bind_rows(.id = "Filename")
+
+
+results_fit <- purrr::map(results, function (x) data.frame(x$summaries)) |>
+  dplyr::bind_rows(.id = "Filename") |>
+  dplyr::select(Filename, CFI, TLI, RMSEA_Estimate, SRMR) |>
+  dplyr::rename(RMSEA = RMSEA_Estimate) |>
+  tidyr::pivot_longer(cols = CFI:SRMR, names_to = "paramHeader", values_to = "value") |>
+  tidyr::drop_na() |>
+  dplyr::mutate(value = papaja::apa_num(value, digits = 3, gt1 = FALSE, flag = " ")) |>
+  dplyr::mutate(param = "FIT")
+
+
+results_tab <- dplyr::bind_rows(results_pars, results_fit) |>
+  dplyr::filter(paramHeader %in% c("FIT", "AB_EF.ON", "BB_EF.ON", "AA_MSI.ON", "BA_MSI.ON") | param == "FIT") |>
+  dplyr::filter(stringr::str_detect(param, "^FIT|^CON|^IV_GE|^[AB]{0,1}CONXINT|^[AB]A_MSI")) |>
+  dplyr::mutate(
+    tp = dplyr::case_when(
+      stringr::str_detect(paramHeader, "^A") ~ 0,
+      stringr::str_detect(paramHeader, "^B") ~ 1, 
+      .default = 2),
+     #paramHeader = stringr::str_remove(paramHeader, "^[BA]{2}_"),
+    paramHeader = dplyr::case_match(
+      paramHeader, 
+      "AA_MSI.ON" ~ "SI~T1~",
+      "BA_MSI.ON" ~ "SI~T2~",
+      "AB_EF.ON" ~ "EF~T1~",
+      "BB_EF.ON" ~ "EF~T2~",
+      .default = paramHeader),  
+    #param = stringr::str_remove(param, "^[BA]{2}_"), 
+    param = dplyr::case_match(
+      param,
+      "CONXINT" ~ "CON \u00D7 IN",
+      "ACONXINT" ~ "CON \u00D7 SI~T1~",
+      "BCONXINT" ~ "CON \u00D7 SI~T2~",
+      "AA_MSI" ~ "SI~T1~",
+      "BA_MSI" ~ "SI~T2~",
+      "IV_GE" ~ "IN",
+      .default = param),
+     param = factor(param, c("CON", "SI~T1~", "SI~T2~", "CON \u00D7 SI~T1~", "CON \u00D7 SI~T2~", "IN", "CON \u00D7 IN", "FIT"))) |>
+  dplyr::arrange(Filename, tp, rev(paramHeader), param) |>
+  dplyr::mutate(
+    value = dplyr::if_else(
+      !is.na(est),
+      paste0(papaja::apa_num(est, gt1 = FALSE, flag = " -"), stars_fun(pval)),
+      value),
+    paramHeader = stringr::str_remove(paramHeader, "\\.ON$"),
+    paramHeader = factor(paramHeader, c("EF~T1~", "EF~T2~", "SI~T1~", "SI~T2~", "CFI", "TLI", "RMSEA", "SRMR"))
+   ) |>
+  dplyr::select(Filename, tp, paramHeader, param, value) |>
+  tidyr::pivot_wider(values_from = value, names_from = c(Filename), names_sort = TRUE) |>
+  dplyr::arrange(tp, param, paramHeader) |>
+  dplyr::mutate(Path = dplyr::if_else(param == "FIT", paramHeader, paste0(param, " \u2192 ", paramHeader))) |>
+  dplyr::select(tp, Path, M1:paste0("M", length(models))) 
+
+out_table <- dplyr::bind_rows(
+  tibble::tibble(Path = "TP = 1"), 
+  dplyr::filter(results_tab, tp == 0),
+  tibble::tibble(Path = "TP = 2"), 
+  dplyr::filter(results_tab, tp == 1),
+  tibble::tibble(Path = "Fit"), 
+  dplyr::filter(results_tab, tp == 2)) |>
+  dplyr::select(-tp) 
+
+
+out_table |>
+  # dplyr::rename_with(~ stringr::str_replace(.x, "M1", "Main\nEffects\nModel")) |>
+  # dplyr::rename_with(~ stringr::str_replace(.x, "M2", "Interaction\nEffects\nModel")) |>
+  dplyr::mutate(Path = dplyr::case_match(
+    Path,
+    "TP = 1" ~ "First Task T1",
+    "TP = 2" ~ "Second Task T2",
+    .default = Path)) |>
+  flextable::flextable() |> 
+  flextable::separate_header() |> 
+  flextable::hline(i = 1, part = "header") |>
+  flextable::hline(i = c((nrow(out_table) - 5)/2, nrow(out_table) - 5), part = "body") |>
+  ftExtra::colformat_md(j = c(1,3)) |>
+  theme_apa_s() |>
+  flextable::padding(padding = 0, part = "all") |>
+  flextable::align(align = "center", part = "header") |>
+  flextable::align(align = "left", part = "body") |>
+  flextable::autofit() 
+```
+
+{{< pagebreak >}}
+
+## S5 – Complete Results of the Interaction Effects Model Including Covariates
+
+In the interaction effects model (M1), task effort was regressed on conscientiousness and situational interest and the latent interactions between conscientiousness and situational interest were included as additional predictors. Furthermore, all correlations between task effort and situational interest in the first and the second tasks were allowed. Additionally, the covariates cognitive abilities, individual interest, gender, grade level, school track, device/external keyboard, and task were included as control variables.
+
+
+```{r}
+#| label: tbl-darius-sg-results-inte
+#| tbl-cap: Complete Results of the Interaction Effects Model Including Covariates
+#| apa-note: Fully standardized regression coefficients are shown. CON = conscientiousness, SI = situational interest, IN = individual interest, CON × SI = latent interaction of conscientiousness and situational interest,CON × IN = latent interaction of conscientiousness and individual interest, EF = effort, CFT = students’ cognitive abilities, ACADEMIC = school track (general track = 0, academic track = 1), GRADE = grade level, GENDER = gender (0 = male, 1 = female), INPUT = type of input device, \u2192 regression, ~ = correlation, * = p < 0.05, ** = p < 0.01, *** = p < 0.001. 
+
+pars <- results[["M7"]]$parameters$stdyx.standardized |>
+  dplyr::filter(stringr::str_detect(paramHeader, "\\.ON$|\\.WITH$")) |>
+  dplyr::filter(!stringr::str_detect(paramHeader, "EF_[1-3]")) |>
+  dplyr::filter(!stringr::str_detect(paramHeader, "MSI_[2-6]")) |>
+  dplyr::mutate(
+    value = paste0(
+      papaja::apa_num(est, gt1 = FALSE),
+      stars_fun(pval)),
+    op = stringr::str_replace(paramHeader, ".*\\.(WITH|ON)$", "\\1"),
+    op = dplyr::case_when(
+      op == "WITH" ~ "~",
+      op == "ON"   ~ "\u2192",
+      TRUE ~ op),
+    paramHeader = stringr::str_remove(paramHeader, "\\.(WITH|ON)$"),
+    param = dplyr::if_else(param == "INT" & paramHeader == "KEY", "KEY", param), 
+    paramHeader = dplyr::if_else(param == "KEY" & paramHeader == "KEY", "INT", paramHeader), 
+    tp1 = dplyr::case_when(
+      stringr::str_detect(paramHeader, "^A") | paramHeader %in% c("INT", "CON", "CONXINT") ~ "T1",
+      stringr::str_detect(paramHeader, "^B") ~ "T2",
+      TRUE ~ "COV"),
+    tp1 = factor(tp1, c("T1", "T2", "COV")),
+    tp2 = dplyr::case_when(
+      stringr::str_detect(param, "^A") | param %in% c("INT", "EF", "A", "CON", "CONXINT") ~ "T1",
+      stringr::str_detect(param, "^B") ~ "T2",
+      TRUE ~ "COV"),
+    tp2 = factor(tp2, c("T1", "T2", "COV")),
+    param = stringr::str_replace(param, "MSI", "SI"),
+    paramHeader = stringr::str_replace(paramHeader, "MSI", "SI"),
+    param = stringr::str_remove(param, "^[AB][AB]{0,1}_{0,1}"),
+    paramHeader = stringr::str_remove(paramHeader, "^[AB][AB]{0,1}_"),
+    param = dplyr::case_match(
+      param,
+      "CONXINT" ~ "CON \u00D7 SI",
+      "IV_GE" ~ "IN",
+      "EF" ~ "EF",
+      "KFT_WLE" ~ "CFT",
+      "KEY" ~ "INPUT",
+      "SCHOOL" ~ "ACADEMIC",
+      .default = param),
+    paramHeader = dplyr::case_match(
+      paramHeader,
+      "IV_GE" ~ "IN",
+      "EF" ~ "EF",
+      "KFT_WLE" ~ "CFT",
+      "KEY" ~ "INPUT",
+      "SCHOOL" ~ "ACADEMIC",
+      .default = paramHeader),
+    param = dplyr::if_else(
+      tp2 == "COV" & param != "CON",
+      param, paste0(param, "~", tp2, "~")),
+    paramHeader = dplyr::if_else(
+      tp1 == "COV" & paramHeader != "CON",
+      paramHeader, paste0(paramHeader, "~", tp1, "~"))) |>
+  dplyr::select(tp1, tp2, param, op, paramHeader, value) |>
+  dplyr::arrange(tp1, dplyr::desc(op), tp2, paramHeader) 
+
+pars |>
+  dplyr::rename(
+    X = "param",
+    Y = "paramHeader",
+    Operator = "op") |>
+  dplyr::select(-tp1, -tp2) |>
+  flextable::flextable() |>
+  flextable::separate_header() |>
+  ftExtra::colformat_md(j = c(1,3)) |>
+  theme_apa_s() |>
+  flextable::padding(padding = 0, part = "all") |>
+  flextable::align(j = c(1,3), align = "left", part = "body") |> 
+  flextable::autofit(part = "all") 
+```
+
+{{< pagebreak >}}
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
